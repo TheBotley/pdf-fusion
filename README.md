@@ -82,9 +82,7 @@ That's it!
 
 Access PDF Fusion online:
 
-**https://YOUR-USERNAME.github.io/pdf-fusion/**
-
-Replace `YOUR-USERNAME` with your GitHub username.
+**https://TheBotley.github.io/pdf-fusion/**
 
 ---
 
@@ -108,7 +106,7 @@ You can run PDF Fusion locally without installing a backend server.
 
 1. Clone this repository:
 
-   `git clone https://github.com/YOUR-USERNAME/pdf-fusion.git`
+   `git clone https://github.com/TheBotley/pdf-fusion.git`
 
 2. Open the project folder.
 
