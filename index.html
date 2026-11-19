@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d14">
+  <meta name="description" content="Combine PDFs, images and common document formats into one PDF. Free, simple and processed locally in your browser.">
+  <title>PDF Fusion — Combine files into one PDF</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c6cff'/%3E%3Cpath d='M18 10h19l11 11v33H18z' fill='none' stroke='white' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M37 10v12h11M25 33h16M25 41h16' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="PDF Fusion home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M9 4.5h9.5L24 10v17.5H9z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M18.5 4.5V10H24M12.5 15h8M12.5 19h8M12.5 23h5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </span>
+      <span>pdf<span class="brand-accent">fusion</span></span>
+    </a>
+    <div class="topbar-note"><span class="status-dot"></span> Free · No account required</div>
+  </header>
+
+  <main id="top" class="shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> ONE SIMPLE TOOL</div>
+      <h1>All your files.<br><span>One PDF.</span></h1>
+      <p>Bring different files together into one clean, downloadable PDF. Add your files, put them in order, and merge.</p>
+      <div class="hero-meta">
+        <span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg> Easy to use</span>
+        <span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg> Files stay on your device</span>
+        <span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg> No installation</span>
+      </div>
+    </section>
+
+    <section class="workspace" aria-labelledby="workspace-title">
+      <div class="workspace-heading">
+        <div>
+          <div class="step-label"><span>01</span> YOUR FILES</div>
+          <h2 id="workspace-title">Build your PDF</h2>
+          <p>Add as many supported files as you need. You can change their order at any time.</p>
+        </div>
+        <div class="local-badge"><span class="lock-icon"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="8" width="12" height="9" rx="2"/><path d="M7 8V6a3 3 0 0 1 6 0v2"/></svg></span> Local processing</div>
+      </div>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose files or drop them here">
+        <input id="fileInput" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp,.svg,.docx,.xlsx,.xls,.pptx,.odt,.rtf,.txt,.md,.csv,.json,.xml,.log,.yaml,.yml,.html,.htm">
+        <div class="upload-icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 21V5m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <strong>Drop files here</strong>
+        <span>or <button id="browseBtn" class="browse-button" type="button">browse your device</button></span>
+        <small>PDF, images, Word, Excel, PowerPoint and text files</small>
+      </div>
+
+      <div class="list-heading">
+        <div class="list-title-wrap">
+          <h3>Files to merge</h3>
+          <span class="file-count" id="countBadge">0 files</span>
+        </div>
+        <button id="clearBtn" class="clear-button" type="button" disabled>Clear all</button>
+      </div>
+      <p class="list-hint" id="fileListHint">Your files will appear here in the order they will be merged.</p>
+      <div id="fileList" class="file-list" aria-live="polite"></div>
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10 4.5h9.5L25 10v17.5H10z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M19.5 4.5V10H25M13.5 15h8M13.5 19h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <strong>No files added yet</strong>
+        <span>Choose files or drag them into the upload area.</span>
+      </div>
+
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+      <div class="merge-footer">
+        <label class="filename-field" for="outputName">
+          <span>PDF file name</span>
+          <div class="filename-input"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.8h7l3 3v11.4H5zM12 2.8v3h3M7.5 10h5M7.5 13h5"/></svg><input id="outputName" type="text" value="merged-files.pdf" maxlength="80" spellcheck="false"></div>
+        </label>
+        <button id="buildBtn" class="merge-button" type="button" disabled>
+          <span id="buildButtonText">Merge into PDF</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
+        </button>
+      </div>
+
+      <div id="progressBox" class="progress-box hidden" aria-live="polite">
+        <div class="progress-top"><span id="progressLabel">Preparing files…</span><b id="progressPercent">0%</b></div>
+        <div class="progress-track"><span id="progressFill"></span></div>
+      </div>
+      <div id="resultBox" class="result-box hidden" aria-live="polite">
+        <div class="result-icon"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg></div>
+        <div class="result-copy"><strong>Your PDF is ready</strong><span id="resultMessage">Your files have been merged successfully.</span></div>
+        <a id="downloadLink" class="download-button" href="#" download="merged-files.pdf">Download PDF <span>↓</span></a>
+      </div>
+    </section>
+
+    <section class="format-info" aria-label="Supported formats">
+      <div class="format-info-title"><span class="info-mark">i</span><strong>Supported formats</strong></div>
+      <p><b>PDF</b> · JPG · PNG · WEBP · GIF · BMP · SVG · DOCX · XLSX · XLS · PPTX · ODT · RTF · TXT · MD · CSV · JSON · XML · HTML · YAML · LOG</p>
+      <p class="format-caveat">PDF pages are preserved. Images become PDF pages. Office and text files are converted to readable text, so complex layouts, charts, and embedded media may not be retained. Password-protected files and unsupported formats must be converted before uploading.</p>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M9 4.5h9.5L24 10v17.5H9z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M18.5 4.5V10H24M12.5 15h8M12.5 19h8M12.5 23h5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><span>pdf<span class="brand-accent">fusion</span></span></a>
+    <span>Simple file merging. Nothing more.</span>
+    <span class="footer-right">Free · Open source · GitHub Pages ready</span>
+  </footer>
+</body>
+</html>
